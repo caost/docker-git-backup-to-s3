@@ -1,4 +1,4 @@
-istepanov/backup-to-s3
+marcellodesales/backup-to-s3
 ======================
 
 Docker container that periodically backups files to Amazon S3 using [s3cmd sync](http://s3tools.org/s3cmd-sync) and cron.
