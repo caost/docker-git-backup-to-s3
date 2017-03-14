@@ -9,9 +9,6 @@ RUN pip install s3cmd klein
 
 ADD s3cfg /root/.s3cfg
 
-ADD server.py /server.py
-RUN chmod +x /server.py
-
 ADD start.sh /start.sh
 RUN chmod +x /start.sh
 
