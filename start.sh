@@ -25,13 +25,17 @@ if [[ "$1" == 'git' ]]; then
 elif [[ "$1" == 'wait-sync' ]]; then
     # http://unix.stackexchange.com/questions/24952/script-to-monitor-folder-for-new-files/24955#24955
     # http://stackoverflow.com/questions/30109469/how-to-get-inotifywait-to-stop-after-a-memory-dump-is-complete/30110041#30110041
-    echo "Will wait until files are at $DATA_PATH..."
-    inotifywait $DATA_PATH -e create -e moved_to |
-      while read path action file; do
-        echo "The file '$file' appeared in directory '$path' via '$action'"
-        # do something with the file
-      done
-    exec /sync.sh
+    if [ -n "$(ls -A $DATA_PATH)" ]
+    then
+      exec /sync.sh
+    else
+      echo "Will wait until files are at $DATA_PATH..."
+      inotifywait $DATA_PATH -e create -e moved_to |
+        while read path action file; do
+          echo "The file '$file' appeared in directory '$path' via '$action'"
+        done
+      exec /sync.sh
+    fi
 
 elif [[ "$1" == 'no-cron' ]]; then
     echo "Sync the directory $DATA_DIR..."
