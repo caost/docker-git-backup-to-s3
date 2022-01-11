@@ -1,28 +1,27 @@
-
-marcellodesales/sync-to-s3
-======================
+# marcellodesales/sync-to-s3
 
 Docker container that can backup files, volumes, git repos directly to Amazon S3 using [s3cmd sync](http://s3tools.org/s3cmd-sync). It can also use a cron job to periodically upload those.
 
 ### Usage
 
-    docker run -d [OPTIONS] marcellodesales/sync-to-s3 start.sh 
+    docker run -d [OPTIONS] marcellodesales/sync-to-s3 start.sh
 
 ### Parameters:
 
-* `-e ACCESS_KEY=<AWS_KEY>`: Your AWS key.
-* `-e SECRET_KEY=<AWS_SECRET>`: Your AWS secret.
-* `-e S3_PATH=s3://<BUCKET_NAME>/<PATH>/`: S3 Bucket name and path. Should end with trailing slash.
-* `-e GIT_REPO=git@github.company.com:org/repo-config-reference-service-config.git`: GitHub repo to clone the master.
-* `-v $HOME/.ssh:/root/.ssh`: In case you use a git URL and require to use ssh keys.
-* `-v /path/to/backup:/data:ro`: mount target local folder to container's data folder. Content of this folder will be synced with S3 bucket.
+- `-e ACCESS_KEY=<AWS_KEY>`: Your AWS key.
+- `-e SECRET_KEY=<AWS_SECRET>`: Your AWS secret.
+- `-e S3_PATH=s3://<BUCKET_NAME>/<PATH>/`: S3 Bucket name and path. Should end with trailing slash.
+- `-e GIT_REPO=git@github.company.com:org/repo-config-reference-service-config.git`: GitHub repo to clone the master.
+- `-e GIT_REV=<sha1-of-commit-of-interest>`: checkout a specific commit
+- `-v $HOME/.ssh:/root/.ssh`: In case you use a git URL and require to use ssh keys.
+- `-v /path/to/backup:/data:ro`: mount target local folder to container's data folder. Content of this folder will be synced with S3 bucket.
 
 ### Optional parameters:
 
-* `-e PARAMS="--dry-run"`: parameters to pass to the sync command ([full list here](http://s3tools.org/usage)).
-* `-e DATA_PATH=/data/`: container's data folder. Default is `/data/`. Should end with trailing slash.
-* `-e 'CRON_SCHEDULE=0 1 * * *'`: specifies when cron job starts ([details](http://en.wikipedia.org/wiki/Cron)). Default is `0 1 * * *` (runs every day at 1:00 am).
-* `no-cron`: run container once and exit (no cron scheduling).
+- `-e PARAMS="--dry-run"`: parameters to pass to the sync command ([full list here](http://s3tools.org/usage)).
+- `-e DATA_PATH=/data/`: container's data folder. Default is `/data/`. Should end with trailing slash.
+- `-e 'CRON_SCHEDULE=0 1 * * *'`: specifies when cron job starts ([details](http://en.wikipedia.org/wiki/Cron)). Default is `0 1 * * *` (runs every day at 1:00 am).
+- `no-cron`: run container once and exit (no cron scheduling).
 
 ### Examples:
 
@@ -97,7 +96,7 @@ services:
 Note that the local directory `builds` is mapped to the directory `/apks` from the volume `apks`.
 
 ```
-$ docker-compose up                                          
+$ docker-compose up
 Recreating dockergitbackuptos3_sync_1
 Attaching to dockergitbackuptos3_sync_1
 sync_1  | Parameter is wait-sync
@@ -128,7 +127,7 @@ sync_1  | -rw-r--r--  1 root root    0 Mar 14 08:26 newfile2
 sync_1  | -rw-r--r--  1 root root    0 Mar 14 08:37 newfile3
 sync_1  | -rw-r--r--  1 root root    0 Mar 14 08:40 newfile4
 sync_1  | -rw-r--r--  1 root root    0 Mar 14 08:41 newfile5
-sync_1  | 
+sync_1  |
 sync_1  | Job started: Tue Mar 14 08:41:03 UTC 2017
 sync_1  | upload: '/apks/newfile' -> 's3://my-s3-bucket/test/apks/newfile'  [1 of 5]
  0 of 0     0% in    0s     0.00 B/s  done

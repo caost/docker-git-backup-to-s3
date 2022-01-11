@@ -7,6 +7,9 @@ set -e
 : ${S3_PATH:?"S3_PATH env variable is required"}
 
 export DATA_PATH=${DATA_PATH:-/data/}
+export GIT_REV=${GIT_REV}
+export GIT_BRANCH=${GIT_BRANCH}
+
 CRON_SCHEDULE=${CRON_SCHEDULE:-0 1 * * *}
 
 echo "access_key=$ACCESS_KEY" >> /root/.s3cfg
@@ -17,8 +20,30 @@ echo "Parameter is $1"
 if [[ "$1" == 'git' ]]; then
     echo "Backing up git repos..."
     : ${GIT_REPO:?"GIT_REPO env variable is required"}
-    rm -rf $DATA_PATH
-    git clone $GIT_REPO $DATA_PATH
+    rm -rf $DATA_PATH/*
+    if [[ -n "$GIT_REV" ]]; then
+      : ${GIT_REV:?"GIT_REV env variable is required"}
+
+      cd $DATA_PATH
+      echo 'GIT_REV=${GIT_REV}'
+      echo 'git init'
+      echo 'git remote add origin ${GIT_REPO}'
+      echo 'git fetch origin ${GIT_REV}'
+      echo 'git reset --hard FETCH_HEAD'
+      git init
+      git remote add origin $GIT_REPO
+      git fetch origin $GIT_REV
+      git reset --hard FETCH_HEAD
+    elif [[ -n "$GIT_BRANCH" ]]; then
+      : ${GIT_BRANCH:?"GIT_BRANCH env variable is required"}
+
+      echo 'GIT_BRANCH=${GIT_BRANCH}'
+      echo 'git clone -b ${GIT_BRANCH} --single-branch ${GIT_REPO} ${DATA_PATH}'
+      git clone -b $GIT_BRANCH --single-branch $GIT_REPO $DATA_PATH
+    else
+      echo 'git clone ${GIT_REPO} ${DATA_PATH}'
+      git clone $GIT_REPO $DATA_PATH
+    fi
     rm -rf $DATA_PATH/.git
     exec /sync.sh
 

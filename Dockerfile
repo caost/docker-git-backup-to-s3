@@ -1,4 +1,4 @@
-FROM debian:jessie
+FROM ubuntu:18.04
 MAINTAINER Marcello_deSales@intuit.com
 
 RUN apt-get update && \
@@ -14,5 +14,7 @@ RUN chmod +x /start.sh
 
 ADD sync.sh /sync.sh
 RUN chmod +x /sync.sh
+
+RUN mkdir /data
 
 CMD [/start.sh]
